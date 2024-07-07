@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const UserFormValidation = z.object({
+export const UserFormSchema = z.object({
   name: z
     .string()
     .min(2, 'Name must be at least 2 characters')
@@ -112,3 +112,5 @@ export function getAppointmentSchema(type: string) {
       return ScheduleAppointmentSchema
   }
 }
+
+export type TUserFormSchema = typeof UserFormSchema

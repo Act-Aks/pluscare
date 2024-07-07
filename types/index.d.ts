@@ -8,16 +8,16 @@ declare type SearchParamProps = {
 declare type Gender = 'Male' | 'Female' | 'Other'
 declare type Status = 'pending' | 'scheduled' | 'cancelled'
 
-declare interface CreateUserParams {
+declare type CreateUserParams = {
   name: string
   email: string
   phone: string
 }
-declare interface User extends CreateUserParams {
+declare type User = CreateUserParams & {
   $id: string
 }
 
-declare interface RegisterUserParams extends CreateUserParams {
+declare type RegisterUserParams = CreateUserParams & {
   userId: string
   birthDate: Date
   gender: Gender
