@@ -24,7 +24,15 @@ export const createUser = async (user: CreateUserParams) => {
 
       return usersDocument?.users[0]
     }
+  }
+}
 
-    throw error
+export const getUser = async (userId: string) => {
+  try {
+    const user = await Users.get(userId)
+
+    return parseStringify(user)
+  } catch (error) {
+    console.log(error)
   }
 }

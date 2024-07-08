@@ -9,7 +9,7 @@ export const UserFormSchema = z.object({
   phone: z.string().refine(phone => /^\+\d{10,15}$/.test(phone), 'Invalid phone number'),
 })
 
-export const PatientFormValidation = z.object({
+export const PatientFormSchema = z.object({
   name: z
     .string()
     .min(2, 'Name must be at least 2 characters')
@@ -114,3 +114,4 @@ export function getAppointmentSchema(type: string) {
 }
 
 export type TUserFormSchema = typeof UserFormSchema
+export type TPatientFormSchema = typeof PatientFormSchema

@@ -1,17 +1,25 @@
 'use client'
 
+import 'react-datepicker/dist/react-datepicker.css'
+import 'react-phone-number-input/style.css'
+
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import Image from 'next/image'
-import { Control } from 'react-hook-form'
+import DatePicker from 'react-datepicker'
+import { Control, ControllerRenderProps, FieldPath, FieldValues } from 'react-hook-form'
 import PhoneInput from 'react-phone-number-input'
-import 'react-phone-number-input/style.css'
 import { Input } from '../ui/input'
+import { Select, SelectContent, SelectTrigger, SelectValue } from '../ui/select'
+import { Textarea } from '../ui/textarea'
 import { FORM_FIELD_TYPE } from './CustomFormField.static'
 
-type CustomFormFieldProps = {
-  control: Control<any>
+type CustomFormFieldProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> = {
+  control: Control<TFieldValues>
+  name: TName
   fieldType: FORM_FIELD_TYPE
-  name: string
   label?: string
   placeholder?: string
   icon?: string
@@ -22,10 +30,28 @@ type CustomFormFieldProps = {
   renderSkeleton?: (field: any) => React.ReactNode
 }
 
-const RenderField = ({ field, ...props }: { field: any } & CustomFormFieldProps) => {
-  const { fieldType, renderSkeleton, icon, placeholder, name } = props
+const RenderField = <
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>({
+  field,
+  ...props
+}: CustomFormFieldProps<TFieldValues, TName> & {
+  field: ControllerRenderProps<TFieldValues, TName>
+}) => {
+  const {
+    children,
+    dateFormat,
+    disabled,
+    fieldType,
+    icon,
+    name,
+    placeholder,
+    renderSkeleton,
+    showTimeSelect,
+  } = props
 
-  switch (props.fieldType) {
+  switch (fieldType) {
     case FORM_FIELD_TYPE.INPUT:
       return (
         <div className='flex rounded-md border border-dark-500 bg-dark-400'>
@@ -49,18 +75,66 @@ const RenderField = ({ field, ...props }: { field: any } & CustomFormFieldProps)
           className='input-phone'
         />
       )
-    case FORM_FIELD_TYPE.DATE:
-      return <Input type='date' {...field} />
-    case FORM_FIELD_TYPE.TIME:
-      return <Input type='time' {...field} />
+    case FORM_FIELD_TYPE.DATE_PICKER:
+      return (
+        <div className='flex rounded-md border border-dark-500 bg-dark-400'>
+          <Image
+            src={'/assets/icons/calendar.svg'}
+            alt={'calendar'}
+            height={24}
+            width={24}
+            className='ml-2'
+          />
+          <FormControl>
+            <DatePicker
+              selected={field.value}
+              onChange={date => field.onChange(date)}
+              dateFormat={dateFormat ?? 'MM/dd/yyyy'}
+              showTimeSelect={showTimeSelect ?? false}
+              timeInputLabel={'Time:'}
+              wrapperClassName='date-picker'
+            />
+          </FormControl>
+        </div>
+      )
+    case FORM_FIELD_TYPE.SELECT:
+      return (
+        <FormControl>
+          <Select onValueChange={field.onChange} value={field.value}>
+            <FormControl>
+              <SelectTrigger className='shad-select-trigger'>
+                <SelectValue placeholder={placeholder} />
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent className='shad-select-content'>{children}</SelectContent>
+          </Select>
+        </FormControl>
+      )
     case FORM_FIELD_TYPE.TEXTAREA:
-      return <Input type='textarea' {...field} />
+      return (
+        <FormControl>
+          <Textarea
+            placeholder={placeholder}
+            {...field}
+            className='shad-textArea'
+            disabled={disabled}
+          />
+        </FormControl>
+      )
+    case FORM_FIELD_TYPE.SKELETON:
+      return renderSkeleton ? renderSkeleton(field) : null
+
     default:
       return <Input type='text' {...field} />
   }
 }
 
-const CustomFormField: React.FC<CustomFormFieldProps> = props => {
+const CustomFormField = <
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>(
+  props: CustomFormFieldProps<TFieldValues, TName>,
+) => {
   const {
     control,
     fieldType,
