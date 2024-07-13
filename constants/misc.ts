@@ -1,12 +1,14 @@
+import { TPatientFormSchema } from '@/lib/schemaValidations'
+import { TypeOf } from 'zod'
+
 export const GenderOptions = ['Male', 'Female', 'Other']
 
-export const PatientFormDefaultValues = {
-  firstName: '',
-  lastName: '',
+export const PatientFormDefaultValues: TypeOf<TPatientFormSchema> = {
+  name: '',
   email: '',
   phone: '',
   birthDate: new Date(Date.now()),
-  gender: 'Male' as Gender,
+  gender: 'Male',
   address: '',
   occupation: '',
   emergencyContactName: '',

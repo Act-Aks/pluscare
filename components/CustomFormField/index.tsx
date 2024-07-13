@@ -8,6 +8,7 @@ import Image from 'next/image'
 import DatePicker from 'react-datepicker'
 import { Control, ControllerRenderProps, FieldPath, FieldValues } from 'react-hook-form'
 import PhoneInput from 'react-phone-number-input'
+import { Checkbox } from '../ui/checkbox'
 import { Input } from '../ui/input'
 import { Select, SelectContent, SelectTrigger, SelectValue } from '../ui/select'
 import { Textarea } from '../ui/textarea'
@@ -27,7 +28,7 @@ type CustomFormFieldProps<
   dateFormat?: string
   showTimeSelect?: boolean
   children?: React.ReactNode
-  renderSkeleton?: (field: any) => React.ReactNode
+  renderSkeleton?: (field: ControllerRenderProps<TFieldValues, TName>) => React.ReactNode
 }
 
 const RenderField = <
@@ -45,6 +46,7 @@ const RenderField = <
     disabled,
     fieldType,
     icon,
+    label,
     name,
     placeholder,
     renderSkeleton,
@@ -115,10 +117,21 @@ const RenderField = <
         <FormControl>
           <Textarea
             placeholder={placeholder}
-            {...field}
             className='shad-textArea'
             disabled={disabled}
+            {...field}
           />
+        </FormControl>
+      )
+    case FORM_FIELD_TYPE.CHECKBOX:
+      return (
+        <FormControl>
+          <div className='flex items-center gap-4'>
+            <Checkbox id={name} checked={field.value} onCheckedChange={field.onChange} />
+            <label htmlFor={name} className='checkbox-label'>
+              {label}
+            </label>
+          </div>
         </FormControl>
       )
     case FORM_FIELD_TYPE.SKELETON:
@@ -135,19 +148,7 @@ const CustomFormField = <
 >(
   props: CustomFormFieldProps<TFieldValues, TName>,
 ) => {
-  const {
-    control,
-    fieldType,
-    name,
-    label,
-    placeholder,
-    icon,
-    disabled,
-    dateFormat,
-    showTimeSelect,
-    children,
-    renderSkeleton,
-  } = props
+  const { control, fieldType, name, label } = props
 
   return (
     <FormField
